@@ -2,6 +2,27 @@ import math
 import random
 
 
+def read_configuration_file(cfg_file: str) -> tuple[int, int, int]:
+    """
+    Reads the configuration file and returns a tuple of integers.
+    """
+    try:
+        with open(
+            cfg_file, "r"
+        ) as f:  # read only the first line to find 3 space separated integers
+            line = f.readline()
+            num_input_nodes, num_hidden_nodes, num_output_nodes = map(int, line.split())
+
+        print("#Input Nodes: ", num_input_nodes)
+        print("#Number Hidden Nodes: ", num_hidden_nodes)
+        print("#Number Output Nodes: ", num_output_nodes)
+
+        return num_input_nodes, num_hidden_nodes, num_output_nodes
+
+    except FileNotFoundError:
+        print("Configuration file not found. Please check the path and try again.")
+
+
 def initialize_network(n_inputs, n_hidden, n_outputs):
     network = {
         "hidden_layer": [
@@ -101,3 +122,28 @@ def train_network(network, train, l_rate, n_epoch, n_outputs):
 def predict(network, row):
     outputs = forward_propagate(network, row)
     return outputs.index(max(outputs))
+
+
+def accuracy_score(actual, predicted):
+    correct = 0
+    for i in range(len(actual)):
+        if actual[i] == predicted[i]:
+            correct += 1
+
+    return correct / float(len(actual)) * 100.0
+
+
+def F1_score(actual, predicted):
+    TP = 0
+    FP = 0
+    FN = 0
+    for i in range(len(actual)):
+        if actual[i] == predicted[i]:
+            TP += 1
+        elif actual[i] != predicted[i]:
+            FP += 1
+            FN += 1
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    F1 = 2 * precision * recall / (precision + recall)
+    return F1
