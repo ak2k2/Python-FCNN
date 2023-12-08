@@ -38,9 +38,14 @@ def forward_propagate(network, row):
     for layer in network.values():
         new_inputs = []
         for neuron in layer:
-            activation = neuron["weights"][-1]  # Bias
-            for i in range(len(neuron["weights"]) - 1):
-                activation += neuron["weights"][i] * inputs[i]
+            # Bias should be the first weight in the weights array and should be used with a fixed input of -1
+            activation = (
+                neuron["weights"][0] * -1
+            )  # Using the first weight as bias with fixed input -1
+            for i in range(1, len(neuron["weights"])):
+                activation += (
+                    neuron["weights"][i] * inputs[i - 1]
+                )  # Adjust index to start from second weight
             neuron["output"] = sigmoid(activation)
             new_inputs.append(neuron["output"])
         inputs = new_inputs
@@ -68,15 +73,16 @@ def backward_propagate_error(network, expected):
 
 def update_weights(network, row, l_rate):
     for i, layer in enumerate(network.values()):
-        inputs = row[:-1]
-        if i != 0:
-            inputs = [
+        inputs = [-1.0] + row[:-1]  # Bias input of -1 added at the beginning
+        if (
+            i != 0
+        ):  # For layers beyond the first, the inputs are the outputs of the previous layer's neurons
+            inputs = [-1.0] + [
                 neuron["output"] for neuron in network[list(network.keys())[i - 1]]
             ]
         for neuron in layer:
             for j in range(len(inputs)):
                 neuron["weights"][j] += l_rate * neuron["delta"] * inputs[j]
-            neuron["weights"][-1] += l_rate * neuron["delta"]  # Update bias
 
 
 def train_network(network, train, l_rate, n_epoch, n_outputs):
