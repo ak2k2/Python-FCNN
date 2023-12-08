@@ -11,17 +11,6 @@ def sigmoid_derivative(x):
     return x * (1 - x)
 
 
-# Initialize a network with the given structure
-def initialize_network(
-    n_inputs, n_hidden, n_outputs, hidden_layer_weights, output_layer_weights
-):
-    network = {
-        "hidden_layer": [{"weights": weights} for weights in hidden_layer_weights],
-        "output_layer": [{"weights": weights} for weights in output_layer_weights],
-    }
-    return network
-
-
 # Forward propagate input to a network output
 def forward_propagate(network, inputs):
     inputs = [-1] + inputs  # Add the fixed input for bias
@@ -103,15 +92,3 @@ def predict(network, row):
     outputs = forward_propagate(network, inputs)
     # Use 0.5 as a threshold to decide the class
     return 1 if outputs[0] > 0.5 else 0
-
-
-# # Example usage:
-# n_inputs = # Number of features
-# n_hidden = # Number of hidden neurons
-# n_outputs = # Number of output neurons
-# hidden_layer_weights = # Hidden layer weights as provided
-# output_layer_weights = # Output layer weights as provided
-# network = initialize_network(n_inputs, n_hidden, n_outputs, hidden_layer_weights, output_layer_weights)
-# train = # Training dataset
-
-# trained_network = train_network(network, train, 0.1, NUM_EPOCHS, n_outputs)
