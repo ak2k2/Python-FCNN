@@ -1,12 +1,13 @@
 import math
 import random
+
 import numpy as np
 
 
-def initialize_network(n_inputs, n_hidden, n_outputs):
+def initialize_network(n_features, n_hidden, n_outputs):
     network = {
         "hidden_layer": [
-            {"weights": [random.uniform(-1.0, 1.0) for i in range(n_inputs + 1)]}
+            {"weights": [random.uniform(-1.0, 1.0) for i in range(n_features + 1)]}
             for j in range(n_hidden)
         ],
         "output_layer": [
@@ -14,6 +15,7 @@ def initialize_network(n_inputs, n_hidden, n_outputs):
             for j in range(n_outputs)
         ],
     }
+
     return network
 
 

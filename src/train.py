@@ -4,30 +4,31 @@ import pandas as pd
 from fcnn import initialize_network, predict, train_network
 from helpers import compute_evaluation_metrics, read_configuration_and_data_file
 
-dataset_file = "bcx.train.txt"
+dst = "bcx"
 
+N_HIDDEN = 10
+
+train_file = f"{dst}.train.txt"
+test_file = f"{dst}.test.txt"
 (
     num_samples,
     num_features,
     n_outputs,
     train_dataset,
-) = read_configuration_and_data_file("bcx.train.txt")
+) = read_configuration_and_data_file(train_file)
 
-test_dataset = read_configuration_and_data_file("bcx.test.txt")[3]
+test_dataset = read_configuration_and_data_file(test_file)[3]
 
 print(f"Number of samples: {num_samples}")
 print(f"Number of features: {num_features}")
 print(f"Number of outputs: {n_outputs}")
-print(train_dataset)
 
-NUM_EPOCHS = 100
-network = initialize_network(num_features, 1, n_outputs)
+NUM_EPOCHS = 200
+network = initialize_network(num_features + n_outputs - 1, N_HIDDEN, n_outputs)
 trained_network = train_network(network, train_dataset, 0.1, NUM_EPOCHS, n_outputs)
 
-print(f"All of the hyperparameters of this NN are: {trained_network}")
 
 # TESTING ON UNSEEN DATA
-
 test_predictions = []
 train_predictions = []
 
