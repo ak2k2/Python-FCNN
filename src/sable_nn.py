@@ -2,7 +2,6 @@ import random
 import math
 
 
-# Define the sigmoid activation function and its derivative
 def sigmoid(x):
     return 1 / (1 + math.exp(-x))
 
@@ -11,14 +10,11 @@ def sigmoid_derivative(x):
     return x * (1 - x)
 
 
-# Forward propagate input to a network output
 def forward_propagate(network, inputs):
     inputs = [-1] + inputs  # Add the fixed input for bias
     hidden_inputs = []
     for neuron in network["hidden_layer"]:
-        # Initialize weighted sum with the bias weight times fixed input
-        total_input = neuron["weights"][0] * -1
-        # Add the rest of the weighted inputs
+        total_input = neuron["weights"][0] * -1  # bias feeds into constant input of -1
         for i in range(len(inputs) - 1):
             total_input += neuron["weights"][i + 1] * inputs[i + 1]
         neuron["output"] = sigmoid(total_input)
@@ -62,6 +58,11 @@ def update_weights(network, row, l_rate):
     # Update weights for the hidden layer
     inputs = [-1] + row[:-1]  # Add the fixed input for bias
     for i, neuron in enumerate(network["hidden_layer"]):
+        print(f"Debug - Hidden Layer Neuron {i}:")
+        print(f"  Length of inputs: {len(inputs)}")
+        print(f"  Length of weights: {len(neuron['weights'])}")
+        if len(inputs) != len(neuron["weights"]):
+            print("  Mismatch in number of inputs and weights!")
         for j in range(len(inputs)):
             neuron["weights"][j] += l_rate * neuron["delta"] * inputs[j]
 
@@ -70,6 +71,11 @@ def update_weights(network, row, l_rate):
         neuron["output"] for neuron in network["hidden_layer"]
     ]  # Add the fixed input for bias
     for i, neuron in enumerate(network["output_layer"]):
+        print(f"Debug - Output Layer Neuron {i}:")
+        print(f"  Length of inputs: {len(inputs)}")
+        print(f"  Length of weights: {len(neuron['weights'])}")
+        if len(inputs) != len(neuron["weights"]):
+            print("  Mismatch in number of inputs and weights!")
         for j in range(len(inputs)):
             neuron["weights"][j] += l_rate * neuron["delta"] * inputs[j]
 
@@ -78,16 +84,15 @@ def train_network(network, train, l_rate, n_epoch, n_outputs):
     for epoch in range(n_epoch):
         for row in train:
             outputs = forward_propagate(network, row[:-n_outputs])
-            expected = [
-                row[-n_outputs]
-            ]  # The expected output is simply the last element of the row
+            # The expected output is simply the last element of the row
+            expected = row[-n_outputs:]
             backward_propagate_error(network, expected)
             update_weights(network, row, l_rate)
     return network
 
 
 def predict(network, row, n_outputs):
-    # Exclude the label (last element) from the input features
+    # Exclude the labels (last '#n_outputs' element(s)) from the input features
     inputs = row[:-n_outputs]
     outputs = forward_propagate(network, inputs)
     # Use 0.5 as a threshold to decide the class
