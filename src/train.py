@@ -4,7 +4,7 @@ import pandas as pd
 from fcnn import initialize_network, predict, train_network
 from helpers import compute_evaluation_metrics, read_configuration_and_data_file
 
-dst = "bcx"
+dst = "breast_cancer/bcx"
 
 N_HIDDEN = 10
 
