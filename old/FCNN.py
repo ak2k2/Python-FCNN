@@ -3,27 +3,6 @@ import random
 import numpy as np
 
 
-def read_configuration_file(cfg_file: str) -> tuple[int, int, int]:
-    """
-    Reads the configuration file and returns a tuple of integers.
-    """
-    try:
-        with open(
-            cfg_file, "r"
-        ) as f:  # read only the first line to find 3 space separated integers
-            line = f.readline()
-            num_input_nodes, num_hidden_nodes, num_output_nodes = map(int, line.split())
-
-        print("#Input Nodes: ", num_input_nodes)
-        print("#Number Hidden Nodes: ", num_hidden_nodes)
-        print("#Number Output Nodes: ", num_output_nodes)
-
-        return num_input_nodes, num_hidden_nodes, num_output_nodes
-
-    except FileNotFoundError:
-        print("Configuration file not found. Please check the path and try again.")
-
-
 def initialize_network(n_inputs, n_hidden, n_outputs):
     network = {
         "hidden_layer": [
@@ -42,6 +21,16 @@ def sigmoid(x):
     return 1.0 / (1.0 + math.exp(-x))
 
 
+def sigmoid_derivative(output):
+    return output * (1.0 - output)
+
+
+def cross_entropy(actual, predicted):
+    return -sum(
+        [actual[i] * math.log(predicted[i] + 1e-15) for i in range(len(actual))]
+    )
+
+
 def forward_propagate(network, row):
     inputs = row
     for layer in network.values():
@@ -54,16 +43,6 @@ def forward_propagate(network, row):
             new_inputs.append(neuron["output"])
         inputs = new_inputs
     return inputs
-
-
-def cross_entropy(actual, predicted):
-    return -sum(
-        [actual[i] * math.log(predicted[i] + 1e-15) for i in range(len(actual))]
-    )
-
-
-def sigmoid_derivative(output):
-    return output * (1.0 - output)
 
 
 def backward_propagate_error(network, expected):

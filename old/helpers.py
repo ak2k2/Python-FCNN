@@ -1,45 +1,3 @@
-def accuracy_score(actual, predicted):
-    correct = 0
-    for i in range(len(actual)):
-        # Check if both the actual and predicted values are lists
-        if isinstance(actual[i], list) and isinstance(predicted[i], list):
-            if len(actual[i]) == len(predicted[i]) and all(
-                a == p for a, p in zip(actual[i], predicted[i])
-            ):
-                correct += 1
-        # Check if both are single-element lists or single elements
-        elif actual[i] == predicted[i]:
-            correct += 1
-
-    return correct / float(len(actual)) * 100.0
-
-
-def F1_score(actual, predicted):
-    TP = 0
-    FP = 0
-    FN = 0
-    for i in range(len(actual)):
-        # Check if the predicted value is a list, and if so, take its first element
-        predicted_val = (
-            predicted[i][0] if isinstance(predicted[i], list) else predicted[i]
-        )
-
-        if actual[i] == predicted_val:
-            TP += 1
-        elif actual[i] != predicted_val:
-            FP += 1
-            FN += 1
-
-    # Handle cases where TP, FP, or FN are zero to avoid ZeroDivisionError
-    if TP == 0:
-        return 0.0
-
-    precision = TP / (TP + FP)
-    recall = TP / (TP + FN)
-    F1 = 2 * precision * recall / (precision + recall)
-    return F1 * 100.0
-
-
 def compute_evaluation_metrics(actual, predicted):
     """
     Computes evaluation metrics for binary classification per class.
@@ -145,6 +103,52 @@ def compute_evaluation_metrics(actual, predicted):
     )
 
     return metrics
+
+
+def read_configuration_and_data_file(file_path: str):
+    """
+    Reads the configuration from the first line and data from the rest of the file.
+
+    Parameters:
+    file_path (str): The path to the file containing the configuration and data.
+
+    Returns:
+    tuple: A tuple containing the number of input nodes, number of hidden nodes,
+           number of output nodes, and the contents of the file as a list of lists.
+    """
+    try:
+        with open(file_path, "r") as file:
+            lines = file.readlines()
+
+        # Extract the configuration from the first line
+        config = lines[0].split()
+        if len(config) != 3:
+            raise ValueError("Configuration line must contain exactly three integers.")
+        num_samples, num_features, n_outputs = map(int, config)
+
+        # Extract the data from the remaining lines
+        contents = []
+        for line in lines[1:]:
+            row = []
+            items = line.split()
+
+            # Process feature columns as floats
+            for item in items[:num_features]:
+                row.append(float(item))
+
+            # Process output columns as integers
+            for item in items[num_features:]:
+                row.append(int(item))
+
+            contents.append(row)
+
+        return num_samples, num_features, n_outputs, contents
+    except FileNotFoundError:
+        print("File not found. Please check the path and try again.")
+        return None, None, None, None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None, None, None, None
 
 
 # # Example usage:
