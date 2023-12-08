@@ -54,15 +54,16 @@ def backward_propagate_error(network, expected):
 
 
 # Update network weights with error
-def update_weights(network, row, l_rate):
+def update_weights(network, row, l_rate, n_outputs):
     # Update weights for the hidden layer
-    inputs = [-1] + row[:-1]  # Add the fixed input for bias
+    inputs = [-1] + row[:-n_outputs]  # Add the fixed input for bias
+    # print(f"Debug - Inputs: {inputs}")
     for i, neuron in enumerate(network["hidden_layer"]):
-        print(f"Debug - Hidden Layer Neuron {i}:")
-        print(f"  Length of inputs: {len(inputs)}")
-        print(f"  Length of weights: {len(neuron['weights'])}")
-        if len(inputs) != len(neuron["weights"]):
-            print("  Mismatch in number of inputs and weights!")
+        # print(f"Debug - Hidden Layer Neuron {i}:")
+        # print(f"  Length of inputs: {len(inputs)}")
+        # print(f"  Length of weights: {len(neuron['weights'])}")
+        # if len(inputs) != len(neuron["weights"]):
+        #     print("  Mismatch in number of inputs and weights!")
         for j in range(len(inputs)):
             neuron["weights"][j] += l_rate * neuron["delta"] * inputs[j]
 
@@ -71,11 +72,11 @@ def update_weights(network, row, l_rate):
         neuron["output"] for neuron in network["hidden_layer"]
     ]  # Add the fixed input for bias
     for i, neuron in enumerate(network["output_layer"]):
-        print(f"Debug - Output Layer Neuron {i}:")
-        print(f"  Length of inputs: {len(inputs)}")
-        print(f"  Length of weights: {len(neuron['weights'])}")
-        if len(inputs) != len(neuron["weights"]):
-            print("  Mismatch in number of inputs and weights!")
+        # print(f"Debug - Output Layer Neuron {i}:")
+        # print(f"  Length of inputs: {len(inputs)}")
+        # print(f"  Length of weights: {len(neuron['weights'])}")
+        # if len(inputs) != len(neuron["weights"]):
+        # print("  Mismatch in number of inputs and weights!")
         for j in range(len(inputs)):
             neuron["weights"][j] += l_rate * neuron["delta"] * inputs[j]
 
@@ -86,8 +87,9 @@ def train_network(network, train, l_rate, n_epoch, n_outputs):
             outputs = forward_propagate(network, row[:-n_outputs])
             # The expected output is simply the last element of the row
             expected = row[-n_outputs:]
+            # print(f"Debug - Expected: {expected}")
             backward_propagate_error(network, expected)
-            update_weights(network, row, l_rate)
+            update_weights(network, row, l_rate, n_outputs)
     return network
 
 
