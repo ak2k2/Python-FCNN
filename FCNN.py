@@ -103,8 +103,9 @@ def train_network(network, train, l_rate, n_epoch, n_outputs):
         sum_error = 0
         for row in train:
             outputs = forward_propagate(network, row)
-            expected = [0 for i in range(n_outputs)]
-            expected[int(row[-1])] = 1  # Adjusted for N classes
+            expected = [
+                row[-n_outputs + i] for i in range(n_outputs)
+            ]  # Extracting the one-hot encoded target
             sum_error += cross_entropy(expected, outputs)
             backward_propagate_error(network, expected)
             update_weights(network, row, l_rate)
@@ -113,9 +114,9 @@ def train_network(network, train, l_rate, n_epoch, n_outputs):
     return network
 
 
-def predict(network, row):
+def predict(network, row, threshold=0.5):
     outputs = forward_propagate(network, row)
-    return outputs.index(max(outputs))
+    return [int(output > threshold) for output in outputs]
 
 
 def predict_multiclass(network, row, threshold=0.5):
@@ -129,7 +130,14 @@ def predict_multiclass(network, row, threshold=0.5):
 def accuracy_score(actual, predicted):
     correct = 0
     for i in range(len(actual)):
-        if actual[i] == predicted[i]:
+        # Check if both the actual and predicted values are lists
+        if isinstance(actual[i], list) and isinstance(predicted[i], list):
+            if len(actual[i]) == len(predicted[i]) and all(
+                a == p for a, p in zip(actual[i], predicted[i])
+            ):
+                correct += 1
+        # Check if both are single-element lists or single elements
+        elif actual[i] == predicted[i]:
             correct += 1
 
     return correct / float(len(actual)) * 100.0
@@ -140,12 +148,22 @@ def F1_score(actual, predicted):
     FP = 0
     FN = 0
     for i in range(len(actual)):
-        if actual[i] == predicted[i]:
+        # Check if the predicted value is a list, and if so, take its first element
+        predicted_val = (
+            predicted[i][0] if isinstance(predicted[i], list) else predicted[i]
+        )
+
+        if actual[i] == predicted_val:
             TP += 1
-        elif actual[i] != predicted[i]:
+        elif actual[i] != predicted_val:
             FP += 1
             FN += 1
+
+    # Handle cases where TP, FP, or FN are zero to avoid ZeroDivisionError
+    if TP == 0:
+        return 0.0
+
     precision = TP / (TP + FP)
     recall = TP / (TP + FN)
     F1 = 2 * precision * recall / (precision + recall)
-    return F1
+    return F1 * 100.0
