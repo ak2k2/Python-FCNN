@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 
 def read_configuration_file(cfg_file: str) -> tuple[int, int, int]:
@@ -41,15 +42,24 @@ def sigmoid(x):
     return 1.0 / (1.0 + math.exp(-x))
 
 
-def forward_propagate(network, row):
+def softmax(x):
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum()
+
+
+def forward_propagate(network, row, n_outputs):
     inputs = row
-    for layer in network.values():
+    for layer_name, layer in network.items():
         new_inputs = []
         for neuron in layer:
             activation = neuron["weights"][-1]  # Bias
             for i in range(len(neuron["weights"]) - 1):
                 activation += neuron["weights"][i] * inputs[i]
-            neuron["output"] = sigmoid(activation)
+            neuron["output"] = (
+                sigmoid(activation)
+                if layer_name != "output_layer"
+                else (softmax(activation) if n_outputs > 1 else sigmoid(activation))
+            )
             new_inputs.append(neuron["output"])
         inputs = new_inputs
     return inputs
@@ -98,19 +108,12 @@ def update_weights(network, row, l_rate):
 
 
 def train_network(network, train, l_rate, n_epoch, n_outputs):
-    """
-    network: FF_NN
-    train: training data
-    l_rate: learning rate
-    n_epoch: number of epochs
-    n_outputs: number of outputs
-    """
     for epoch in range(n_epoch):
         sum_error = 0
         for row in train:
             outputs = forward_propagate(network, row)
             expected = [0 for i in range(n_outputs)]
-            expected[row[-1]] = 1  # ONE-HOT ENCODING the last column
+            expected[int(row[-1])] = 1  # Adjusted for N classes
             sum_error += cross_entropy(expected, outputs)
             backward_propagate_error(network, expected)
             update_weights(network, row, l_rate)
@@ -122,6 +125,14 @@ def train_network(network, train, l_rate, n_epoch, n_outputs):
 def predict(network, row):
     outputs = forward_propagate(network, row)
     return outputs.index(max(outputs))
+
+
+def predict_multiclass(network, row, threshold=0.5):
+    outputs = forward_propagate(network, row)
+    # Apply threshold to each output
+    prediction = [1 if output > threshold else 0 for output in outputs]
+    # Enforce logical consistency
+    return predict
 
 
 def accuracy_score(actual, predicted):
