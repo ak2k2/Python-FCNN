@@ -77,18 +77,18 @@ def update_weights(network, row, l_rate):
 def train_network(network, train, l_rate, n_epoch, n_outputs):
     for epoch in range(n_epoch):
         for row in train:
-            outputs = forward_propagate(network, row[:-1])
+            outputs = forward_propagate(network, row[:-n_outputs])
             expected = [
-                row[-1]
+                row[-n_outputs]
             ]  # The expected output is simply the last element of the row
             backward_propagate_error(network, expected)
             update_weights(network, row, l_rate)
     return network
 
 
-def predict(network, row):
+def predict(network, row, n_outputs):
     # Exclude the label (last element) from the input features
-    inputs = row[:-1]
+    inputs = row[:-n_outputs]
     outputs = forward_propagate(network, inputs)
     # Use 0.5 as a threshold to decide the class
     return 1 if outputs[0] > 0.5 else 0

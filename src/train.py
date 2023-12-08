@@ -21,8 +21,8 @@ def main(
         initial_network, train_data, lr, n_epochs, n_outputs
     )
 
-    train_predictions = [predict(trained_network, row) for row in train_data]
-    test_predictions = [predict(trained_network, row) for row in test_data]
+    train_predictions = [predict(trained_network, row, n_outputs) for row in train_data]
+    test_predictions = [predict(trained_network, row, n_outputs) for row in test_data]
 
     train_evals = compute_binary_classification_metrics(
         [x[-1] for x in train_data], train_predictions
