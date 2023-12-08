@@ -42,24 +42,15 @@ def sigmoid(x):
     return 1.0 / (1.0 + math.exp(-x))
 
 
-def softmax(x):
-    e_x = np.exp(x - np.max(x))
-    return e_x / e_x.sum()
-
-
-def forward_propagate(network, row, n_outputs):
+def forward_propagate(network, row):
     inputs = row
-    for layer_name, layer in network.items():
+    for layer in network.values():
         new_inputs = []
         for neuron in layer:
             activation = neuron["weights"][-1]  # Bias
             for i in range(len(neuron["weights"]) - 1):
                 activation += neuron["weights"][i] * inputs[i]
-            neuron["output"] = (
-                sigmoid(activation)
-                if layer_name != "output_layer"
-                else (softmax(activation) if n_outputs > 1 else sigmoid(activation))
-            )
+            neuron["output"] = sigmoid(activation)
             new_inputs.append(neuron["output"])
         inputs = new_inputs
     return inputs
