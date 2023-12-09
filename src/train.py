@@ -1,5 +1,5 @@
+from fcnn import train_network
 from helpers import load_network_from_file, read_configuration_and_data_file
-from sable_nn import train_network
 
 
 def train_pipline(
@@ -34,20 +34,18 @@ def train_pipline(
             file.write(" ".join(map(str, rounded_weights)))
             file.write("\n")
 
-    print(f"Trained network {trained_network}")
-
 
 if __name__ == "__main__":
-    # network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/NNGRADES.txt"
-    # train_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/GRADES_train.txt"
-    # output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TRAINED_GRADES.txt"
+    network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/NNGRADES.txt"
+    train_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/GRADES_train.txt"
+    output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TRAINED_GRADES.txt"
 
-    network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/NNWDBC.txt"
-    train_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/WDBC_train.txt"
-    output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TRAINED_NNWDBC.txt"
+    # network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/NNWDBC.txt"
+    # train_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/WDBC_train.txt"
+    # output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TRAINED_NNWDBC.txt"
 
     n_epochs = 100
-    lr = 0.1
+    lr = 0.05
 
     trained_network = train_pipline(
         network_file_path=network_file_path,
@@ -56,3 +54,5 @@ if __name__ == "__main__":
         n_epochs=n_epochs,
         lr=lr,
     )
+
+    print(f"Succesfully trained network and saved to: '{output_file_path}'")

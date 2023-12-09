@@ -98,10 +98,8 @@ def load_network_from_file(file_path: str):
 def evaluate_predictions(true_labels, predictions):
     # Initialize the counters for micro-average
     micro_A = micro_B = micro_C = micro_D = 0
-    # Initialize lists to store per-class A, B, C, D and metrics for macro-average
     class_metrics = []
 
-    # Loop over each class
     for class_index in range(len(true_labels[0])):
         A = B = C = D = 0
         # Count A, B, C, D for the current class

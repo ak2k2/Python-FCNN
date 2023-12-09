@@ -1,9 +1,9 @@
+from fcnn import predict
 from helpers import (
+    evaluate_predictions,
     load_network_from_file,
     read_configuration_and_data_file,
-    evaluate_predictions,
 )
-from sable_nn import predict
 
 
 def test_pipeline(
@@ -22,10 +22,6 @@ def test_pipeline(
         predictions = [[prediction] for prediction in predictions]  # wrap in list
 
     class_metrics, micro, macro = evaluate_predictions(true_labels, predictions)
-
-    print(f"Class metrics: {class_metrics}")
-    print(f"Micro: {micro}")
-    print(f"Macro: {macro}")
 
     with open(output_file_path, "w") as f:
         # Write the class metrics
@@ -46,16 +42,18 @@ def test_pipeline(
 
 
 if __name__ == "__main__":
-    # network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TRAINED_GRADES.txt"
-    # test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/GRADES_test.txt"
-    # output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TESTED_GRADES.txt"
+    network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TRAINED_GRADES.txt"
+    test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/GRADES_test.txt"
+    output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TESTED_GRADES.txt"
 
-    network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TRAINED_NNWDBC.txt"
-    test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/WDBC_test.txt"
-    output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TESTED_NNWDBC.txt"
+    # network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TRAINED_NNWDBC.txt"
+    # test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/WDBC_test.txt"
+    # output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TESTED_NNWDBC.txt"
 
     trained_network = test_pipeline(
         network_file_path=network_file_path,
         test_file_path=test_file_path,
         output_file_path=output_file_path,
     )
+
+    print(f"Succesfully tested network and saved results to: '{output_file_path}'")

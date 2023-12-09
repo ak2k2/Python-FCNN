@@ -1,4 +1,3 @@
-import random
 import math
 
 
@@ -14,14 +13,12 @@ def forward_propagate(network, inputs):
     inputs = [-1] + inputs  # Add the fixed input for bias
     hidden_inputs = []
     for neuron in network["hidden_layer"]:
-        total_input = neuron["weights"][0] * -1  # bias feeds into constant input of -1
+        total_input = neuron["weights"][0] * -1
         for i in range(len(inputs) - 1):
             total_input += neuron["weights"][i + 1] * inputs[i + 1]
         neuron["output"] = sigmoid(total_input)
         hidden_inputs.append(neuron["output"])
-    hidden_inputs = [
-        -1
-    ] + hidden_inputs  # Add the fixed input for bias in the output layer
+    hidden_inputs = [-1] + hidden_inputs
     output_inputs = []
     for neuron in network["output_layer"]:
         # Initialize weighted sum with the bias weight times fixed input
@@ -36,12 +33,12 @@ def forward_propagate(network, inputs):
 
 # Backward propagate error and store in neurons
 def backward_propagate_error(network, expected):
-    # Calculate error for output layer
+    # Error: Output layer
     for i, neuron in enumerate(network["output_layer"]):
         error = expected[i] - neuron["output"]
         neuron["delta"] = error * sigmoid_derivative(neuron["output"])
 
-    # Calculate error for hidden layer
+    # Error: Hidden layer
     for i, neuron in enumerate(network["hidden_layer"]):
         error = sum(
             [
@@ -53,30 +50,19 @@ def backward_propagate_error(network, expected):
         neuron["delta"] = error * sigmoid_derivative(neuron["output"])
 
 
-# Update network weights with error
 def update_weights(network, row, l_rate, n_outputs):
-    # Update weights for the hidden layer
+    # Hidden layer weights
     inputs = [-1] + row[:-n_outputs]  # Add the fixed input for bias
-    # print(f"Debug - Inputs: {inputs}")
+
     for i, neuron in enumerate(network["hidden_layer"]):
-        # print(f"Debug - Hidden Layer Neuron {i}:")
-        # print(f"  Length of inputs: {len(inputs)}")
-        # print(f"  Length of weights: {len(neuron['weights'])}")
-        # if len(inputs) != len(neuron["weights"]):
-        #     print("  Mismatch in number of inputs and weights!")
         for j in range(len(inputs)):
             neuron["weights"][j] += l_rate * neuron["delta"] * inputs[j]
 
-    # Update weights for the output layer
+    # Output layer weights
     inputs = [-1] + [
         neuron["output"] for neuron in network["hidden_layer"]
-    ]  # Add the fixed input for bias
+    ]  # Add fixed input for bias
     for i, neuron in enumerate(network["output_layer"]):
-        # print(f"Debug - Output Layer Neuron {i}:")
-        # print(f"  Length of inputs: {len(inputs)}")
-        # print(f"  Length of weights: {len(neuron['weights'])}")
-        # if len(inputs) != len(neuron["weights"]):
-        # print("  Mismatch in number of inputs and weights!")
         for j in range(len(inputs)):
             neuron["weights"][j] += l_rate * neuron["delta"] * inputs[j]
 
@@ -115,7 +101,6 @@ def predict(network, row, n_outputs):
     if n_outputs == 1:
         return 1 if outputs[0] > 0.5 else 0
 
-    # Multi-label classification case
     else:
-        # Predict each class independently
+        # Multi-label classification case
         return [1 if output > 0.5 else 0 for output in outputs]
