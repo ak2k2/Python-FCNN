@@ -42,13 +42,9 @@ def test_pipeline(
 
 
 if __name__ == "__main__":
-    network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TRAINED_GRADES.txt"
-    test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/GRADES_test.txt"
-    output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TESTED_GRADES.txt"
-
-    # network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TRAINED_NNWDBC.txt"
-    # test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/WDBC_test.txt"
-    # output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TESTED_NNWDBC.txt"
+    network_file_path = input("Enter the path for the trained network file: ")
+    test_file_path = input("Enter the path for the test file: ")
+    output_file_path = input("Enter the path for the output file: ")
 
     trained_network = test_pipeline(
         network_file_path=network_file_path,

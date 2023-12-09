@@ -36,16 +36,12 @@ def train_pipline(
 
 
 if __name__ == "__main__":
-    network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/NNGRADES.txt"
-    train_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/GRADES_train.txt"
-    output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TRAINED_GRADES.txt"
+    network_file_path = input("Enter the path for the network file: ")
+    train_file_path = input("Enter the path for the training file: ")
+    output_file_path = input("Enter the path for the output file: ")
 
-    # network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/NNWDBC.txt"
-    # train_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/WDBC_train.txt"
-    # output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TRAINED_NNWDBC.txt"
-
-    n_epochs = 100
-    lr = 0.05
+    n_epochs = int(input("Enter the number of epochs for training: "))
+    lr = float(input("Enter the learning rate: "))
 
     trained_network = train_pipline(
         network_file_path=network_file_path,
