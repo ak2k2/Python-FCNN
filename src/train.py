@@ -24,25 +24,19 @@ def main(
     train_predictions = [predict(trained_network, row, n_outputs) for row in train_data]
     test_predictions = [predict(trained_network, row, n_outputs) for row in test_data]
 
-    train_evals = compute_binary_classification_metrics(
+    train_evals = compute_multiclass_classification_metrics(
         [x[-1] for x in train_data], train_predictions
     )
 
-    test_evals = compute_binary_classification_metrics(
+    test_evals = compute_multiclass_classification_metrics(
         [x[-1] for x in test_data], test_predictions
     )
     print("-" * 50)
-    print("Train set evaluation:")
-    print(f"Accuracy: {train_evals['accuracy']}")
-    print(f"Precision: {train_evals['precision']}")
-    print(f"Recall: {train_evals['recall']}")
-    print(f"F1: {train_evals['F1']}")
+    print("Training set evaluation:")
+    print(train_evals)
     print("-" * 50)
     print("Test set evaluation:")
-    print(f"Accuracy: {test_evals['accuracy']}")
-    print(f"Precision: {test_evals['precision']}")
-    print(f"Recall: {test_evals['recall']}")
-    print(f"F1: {test_evals['F1']}")
+    print(test_evals)
     print("-" * 50)
 
     # return trained network but all weights are rounded to 3 decimal places
@@ -75,7 +69,7 @@ if __name__ == "__main__":
         lr=0.1,
     )
 
-    # unit test WDBC
+    # # unit test WDBC
     print(
         tn
         == {

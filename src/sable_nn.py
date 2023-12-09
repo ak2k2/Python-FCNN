@@ -94,8 +94,28 @@ def train_network(network, train, l_rate, n_epoch, n_outputs):
 
 
 def predict(network, row, n_outputs):
-    # Exclude the labels (last '#n_outputs' element(s)) from the input features
+    """
+    Predicts the output for a given input row using the neural network.
+    For binary classification (n_outputs=1), it returns a single integer 0 or 1.
+    For multi-label classification (n_outputs>1), it returns a list of binary integers.
+
+    Parameters:
+    network: A trained neural network.
+    row: A list representing an input row with features and labels.
+    n_outputs: The number of outputs the network should predict.
+
+    Returns:
+    The prediction, which could be a binary value or a list of binary values.
+    """
+    # Exclude the labels (last 'n_outputs' element(s)) from the input features
     inputs = row[:-n_outputs]
     outputs = forward_propagate(network, inputs)
-    # Use 0.5 as a threshold to decide the class
-    return 1 if outputs[0] > 0.5 else 0
+
+    # Binary classification case
+    if n_outputs == 1:
+        return 1 if outputs[0] > 0.5 else 0
+
+    # Multi-label classification case
+    else:
+        # Predict each class independently
+        return [1 if output > 0.5 else 0 for output in outputs]

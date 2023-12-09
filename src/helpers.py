@@ -95,32 +95,119 @@ def load_network_from_file(file_path: str):
         return None
 
 
-def compute_binary_classification_metrics(actual, predicted):
+def compute_multiclass_classification_metrics(actual, predicted):
     """
-    Computes evaluation metrics for binary classification.
+    Computes evaluation metrics for binary and multi-class classification, including micro and macro averages.
 
     Parameters:
-    actual (list): Actual classes.
-    predicted (list): Predicted classes.
+    actual (list or list of list): Actual classes.
+    predicted (list or list of list): Predicted classes.
 
     Returns:
-    metrics (dict): A dictionary with accuracy, precision, recall, and F1 score.
+    metrics (dict): A dictionary with per-class accuracy, precision, recall, and F1 score, and micro and macro-averaged metrics.
     """
-    TP = sum(1 for a, p in zip(actual, predicted) if a == 1 and p == 1)
-    TN = sum(1 for a, p in zip(actual, predicted) if a == 0 and p == 0)
-    FP = sum(1 for a, p in zip(actual, predicted) if a == 0 and p == 1)
-    FN = sum(1 for a, p in zip(actual, predicted) if a == 1 and p == 0)
+    # If actual and predicted are not lists of lists, convert them to lists of lists (one-hot encoding)
+    if isinstance(actual[0], int):
+        actual = [[1 if i == a else 0 for i in range(max(actual) + 1)] for a in actual]
+        predicted = [
+            [1 if i == p else 0 for i in range(max(predicted) + 1)] for p in predicted
+        ]
 
-    accuracy = (TP + TN) / len(actual)
-    precision = TP / (TP + FP) if TP + FP != 0 else 0
-    recall = TP / (TP + FN) if TP + FN != 0 else 0
-    f1_score = (
-        2 * precision * recall / (precision + recall) if precision + recall != 0 else 0
+    n_classes = len(actual[0])
+    class_metrics = []
+    micro_TP = micro_FP = micro_FN = micro_TN = 0
+    macro_accuracy = macro_precision = macro_recall = macro_f1 = 0
+
+    # Calculate metrics per class
+    for class_index in range(n_classes):
+        TP = sum(
+            1
+            for a, p in zip(actual, predicted)
+            if a[class_index] == 1 and p[class_index] == 1
+        )
+        TN = sum(
+            1
+            for a, p in zip(actual, predicted)
+            if a[class_index] == 0 and p[class_index] == 0
+        )
+        FP = sum(
+            1
+            for a, p in zip(actual, predicted)
+            if a[class_index] == 0 and p[class_index] == 1
+        )
+        FN = sum(
+            1
+            for a, p in zip(actual, predicted)
+            if a[class_index] == 1 and p[class_index] == 0
+        )
+
+        # Update micro metrics
+        micro_TP += TP
+        micro_FP += FP
+        micro_FN += FN
+        micro_TN += TN
+
+        accuracy = (TP + TN) / (TP + FP + FN + TN) if TP + FP + FN + TN != 0 else 0
+        precision = TP / (TP + FP) if TP + FP != 0 else 0
+        recall = TP / (TP + FN) if TP + FN != 0 else 0
+        f1_score = (
+            2 * precision * recall / (precision + recall)
+            if precision + recall != 0
+            else 0
+        )
+
+        # Update macro metrics
+        macro_accuracy += accuracy
+        macro_precision += precision
+        macro_recall += recall
+        macro_f1 += f1_score
+
+        class_metrics.append(
+            {
+                "A": TP,
+                "B": FP,
+                "C": FN,
+                "D": TN,
+                "accuracy": accuracy,
+                "precision": precision,
+                "recall": recall,
+                "F1": f1_score,
+            }
+        )
+
+    # Compute micro-averaged metrics
+    micro_accuracy = (micro_TP + micro_TN) / (micro_TP + micro_FP + micro_FN + micro_TN)
+    micro_precision = (
+        micro_TP / (micro_TP + micro_FP) if micro_TP + micro_FP != 0 else 0
+    )
+    micro_recall = micro_TP / (micro_FN + micro_TP) if micro_TP + micro_FN != 0 else 0
+    micro_f1_score = (
+        2 * micro_precision * micro_recall / (micro_precision + micro_recall)
+        if micro_precision + micro_recall != 0
+        else 0
     )
 
-    return {
-        "accuracy": accuracy,
-        "precision": precision,
-        "recall": recall,
-        "F1": f1_score,
+    # Compute macro-averaged metrics
+    macro_accuracy /= n_classes
+    macro_precision /= n_classes
+    macro_recall /= n_classes
+    macro_f1 /= n_classes
+
+    # Combine class metrics with micro-averaged and macro-averaged metrics
+    metrics = {
+        "per_class": class_metrics,
+        "micro_averaged": {
+            "accuracy": micro_accuracy,
+            "precision": micro_precision,
+            "recall": micro_recall,
+            "F1": micro_f1_score,
+        },
+        "macro_averaged": {
+            "accuracy": macro_accuracy,
+            "precision": macro_precision,
+            "recall": macro_recall,
+            "F1": macro_f1,
+        },
     }
+
+    return metrics
