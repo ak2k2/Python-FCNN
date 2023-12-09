@@ -18,8 +18,8 @@ def test_pipeline(
     true_labels = [row[-n_outputs:] for row in test_data]
     predictions = [predict(trained_network, row, n_outputs) for row in test_data]
 
-    # convert prediciton from a list of ints to a list of lists of ints
-    predictions = [[prediction] for prediction in predictions]
+    if isinstance(predictions[0], int):  # for single output classification
+        predictions = [[prediction] for prediction in predictions]  # wrap in list
 
     class_metrics, micro, macro = evaluate_predictions(true_labels, predictions)
 
@@ -46,13 +46,13 @@ def test_pipeline(
 
 
 if __name__ == "__main__":
-    network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TRAINED_GRADES.txt"
-    test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/GRADES_test.txt"
-    output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TESTED_GRADES.txt"
+    # network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TRAINED_GRADES.txt"
+    # test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/GRADES_test.txt"
+    # output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/grades/KAPOOR_TESTED_GRADES.txt"
 
-    # network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TRAINED_NNWDBC.txt"
-    # test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/WDBC_test.txt"
-    # output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TESTED_NNWDBC.txt"
+    network_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TRAINED_NNWDBC.txt"
+    test_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/WDBC_test.txt"
+    output_file_path = "/Users/armaan/Desktop/Fall-2023 Classes/Sable-Artificial-Intelligence/NN/breast_cancer/KAPOOR_TESTED_NNWDBC.txt"
 
     trained_network = test_pipeline(
         network_file_path=network_file_path,
